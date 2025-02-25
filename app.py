@@ -26,7 +26,7 @@ def get_files(search_query=None):
         if os.path.isfile(file_path):
             file_info = {
                 "name": file_name,
-                "size": f"{os.path.getsize(file_path) / 1024:.2f} KB",
+                "size": f"{os.path.getsize(file_path) / (1024 * 1024):.2f} MB",
                 "modified": datetime.fromtimestamp(os.path.getmtime(file_path)).strftime('%Y-%m-%d %H:%M:%S')
             }
             files.append(file_info)
@@ -38,6 +38,15 @@ def list_files():
     search_query = request.args.get('search')
     files = get_files(search_query)
     return jsonify(files)
+
+# New route to serve the file
+@app.route('/file/<filename>', methods=['GET'])
+def serve_file(filename):
+    file_path = os.path.join(FILES_DIRECTORY, filename)
+    if os.path.exists(file_path) and os.path.isfile(file_path):
+        return send_from_directory(FILES_DIRECTORY, filename, as_attachment=False)
+    else:
+        return jsonify({"error": "File not found"}), 404
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)

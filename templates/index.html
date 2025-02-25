@@ -59,7 +59,9 @@
 
             fileTable.innerHTML = files.map(file => `
                 <tr>
-                    <td class="py-2 px-4 border-b">${file.name}</td>
+                    <td class="py-2 px-4 border-b">
+                        <a href="/file/${encodeURIComponent(file.name)}" target="_blank" class="text-blue-600 hover:underline">${file.name}</a>
+                    </td>
                     <td class="py-2 px-4 border-b">${file.modified}</td>
                     <td class="py-2 px-4 border-b">${file.size}</td>
                 </tr>
