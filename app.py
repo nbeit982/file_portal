@@ -2,6 +2,7 @@ from flask import *
 import os
 from datetime import datetime
 from flask_cors import CORS
+from flask import send_from_directory
 
 app = Flask(__name__)
 CORS(app)
@@ -39,6 +40,9 @@ def list_files():
     files = get_files(search_query)
     return jsonify(files)
 
+@app.route('/files/<path:filename>', methods=['GET'])
+def get_file(filename):
+    return send_from_directory(FILES_DIRECTORY, filename)
 # New route to serve the file
 @app.route('/file/<filename>', methods=['GET'])
 def serve_file(filename):
@@ -49,4 +53,4 @@ def serve_file(filename):
         return jsonify({"error": "File not found"}), 404
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=80, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)

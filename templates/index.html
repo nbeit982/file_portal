@@ -8,7 +8,7 @@
     <link rel="icon" type="image/x-icon" href="static/favicon.ico">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" />
-
+    <script src="https://unpkg.com/sweetalert2@11"></script>
 
 </head>
 
@@ -53,36 +53,31 @@
 
         async function fetchFiles() {
             const searchValue = document.getElementById("fileSearch").value;
-            const response = await fetch('/files?search=' + encodeURIComponent(searchValue));
+            const response = await fetch('http://127.0.0.1:5000/files?search=' + encodeURIComponent(searchValue));
             const files = await response.json();
             const fileTable = document.getElementById("fileTable");
 
             fileTable.innerHTML = files.map(file => `
-                <tr>
-                    <td class="py-2 px-4 border-b">
-                        <a href="/file/${encodeURIComponent(file.name)}" target="_blank" class="text-blue-600 hover:underline">${file.name}</a>
-                    </td>
+                <tr onclick="openFile('${file.name}')" style="cursor: pointer;">
+                    <td class="py-2 px-4 border-b">${file.name}</td>
                     <td class="py-2 px-4 border-b">${file.modified}</td>
                     <td class="py-2 px-4 border-b">${file.size}</td>
                 </tr>
             `).join('');
         }
 
+        function openFile(fileName) {
+            const fileUrl = `/files/${encodeURIComponent(fileName)}`;
+            Swal.fire({
+                title: fileName,
+                html: `<iframe src="${fileUrl}" width="100%" height="400px" style="border:none;"></iframe>`,
+                width: 800,
+                showCloseButton: true
+            });
+        }
+
         // Fetch files on initial load
         fetchFiles();
-    </script>
-
-        <!------------------------------------ Footer ------------------------------------------------->
-        <div class="flex justify-center items-center px-2 py-2 text-white" style="background-color: #31577c;">
-            <p class="text-sm md:text-base text-center">&copy; National Board of Examinations in Medical Sciences, New
-                Delhi, <span id="year"></span>
-            </p>
-        </div>
-        <!--------------------------------------------------------------------------------------------->
-
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
     </script>
 </body>
 
