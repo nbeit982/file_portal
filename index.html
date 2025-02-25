@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>एनबीईएमएस NBEMS</title>
+    <link rel="icon" type="image/x-icon" href="static/favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" />
+
+
+</head>
+
+<body class="h-full">
+
+    <div class="flex flex-col h-full">
+        <!------------------------------------ Header ------------------------------------------------->
+        <div class="flex items-center px-1 py-2 text-white" style="background-color: #31577c;" id="header">
+            <div class="flex-none mx-2">
+                <img src="static/logo.png" class="size-12 md:size-20" alt="natboard logo">
+            </div>
+            <div class="grow">
+                <p class="text-xl hidden md:block">आयुर्विज्ञान में राष्ट्रीय परीक्षा बोर्ड</p>
+                <p class="text-lg hidden md:block"> (स्वास्थ्य एवं परिवार कल्याण
+                    मंत्रालय,
+                    भारत सरकार के अधीन एक स्वायत्त निकाय)</p>
+                <p class="text-sm md:text-xl">National Board of Examinations in Medical Sciences
+                </p>
+                <p class="text-lg hidden md:block"> (An Autonomous Body under
+                    Ministry
+                    of
+                    Health and Family Welfare, Government of India)</p>
+                <!-- <h6 style="margin-bottom:1px;padding:0px;font-weight: normal;">(आईएसओ 9001:2015 प्रमाणित संगठन An ISO 9001:2015 Certified Organisation)</h6> -->
+            </div>
+            <div class="flex-none mx-2">
+                <img src="static/amrit_mahotsav.png" class="w-16 md:w-24" alt="">
+            </div>
+        </div>
+        <!--------------------------------------------------------------------------------------------->
+
+        <!-- Content here -->
+        <div id="content" class="flex flex-col grow p-4" style="background-color: #E3F3FA;">
+            <div class="mb-4">
+                <input type="text" id="fileSearch" placeholder="Search files by name..." class="w-full p-2 rounded-lg border border-gray-300" onkeyup="filterFiles()">
+            </div>
+            <table class="min-w-full bg-white rounded-lg">
+                <thead>
+                    <tr>
+                        <th class="py-2 px-4 border-b">File Name</th>
+                        <th class="py-2 px-4 border-b">Date Modified</th>
+                        <th class="py-2 px-4 border-b">Size</th>
+                    </tr>
+                </thead>
+                <tbody id="fileTable">
+                    <tr>
+                        <td class="py-2 px-4 border-b">example_file_1.pdf</td>
+                        <td class="py-2 px-4 border-b">2025-02-24</td>
+                        <td class="py-2 px-4 border-b">1.2 MB</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2 px-4 border-b">example_file_2.docx</td>
+                        <td class="py-2 px-4 border-b">2025-02-23</td>
+                        <td class="py-2 px-4 border-b">800 KB</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="flex justify-center items-center px-2 py-2 text-white" style="background-color: #31577c;">
+            <p class="text-sm md:text-base text-center">&copy; National Board of Examinations in Medical Sciences, New Delhi, <span id="year"></span></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("year").innerText = new Date().getFullYear();
+
+        function filterFiles() {
+            const searchValue = document.getElementById("fileSearch").value.toLowerCase();
+            const rows = document.querySelectorAll("#fileTable tr");
+
+            rows.forEach(row => {
+                const fileName = row.cells[0].innerText.toLowerCase();
+                row.style.display = fileName.includes(searchValue) ? "" : "none";
+            });
+        }
+    </script>
+
+
+        <!------------------------------------ Footer ------------------------------------------------->
+        <div class="flex justify-center items-center px-2 py-2 text-white" style="background-color: #31577c;">
+            <p class="text-sm md:text-base text-center">&copy; National Board of Examinations in Medical Sciences, New
+                Delhi, <span id="year"></span>
+            </p>
+        </div>
+        <!--------------------------------------------------------------------------------------------->
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+    </script>
+</body>
+
+<script>
+    document.getElementById("year").innerText = new Date().getFullYear();
+</script>
+
+</html>
