@@ -13,36 +13,23 @@
 </head>
 
 <body class="h-full">
-
     <div class="flex flex-col h-full">
-        <!------------------------------------ Header ------------------------------------------------->
-        <div class="flex items-center px-1 py-2 text-white" style="background-color: #31577c;" id="header">
+        <div class="flex items-center px-1 py-2 text-white" style="background-color: #31577c;">
             <div class="flex-none mx-2">
                 <img src="static/logo.png" class="size-12 md:size-20" alt="natboard logo">
             </div>
             <div class="grow">
-                <p class="text-xl hidden md:block">आयुर्विज्ञान में राष्ट्रीय परीक्षा बोर्ड</p>
-                <p class="text-lg hidden md:block"> (स्वास्थ्य एवं परिवार कल्याण
-                    मंत्रालय,
-                    भारत सरकार के अधीन एक स्वायत्त निकाय)</p>
-                <p class="text-sm md:text-xl">National Board of Examinations in Medical Sciences
-                </p>
-                <p class="text-lg hidden md:block"> (An Autonomous Body under
-                    Ministry
-                    of
-                    Health and Family Welfare, Government of India)</p>
-                <!-- <h6 style="margin-bottom:1px;padding:0px;font-weight: normal;">(आईएसओ 9001:2015 प्रमाणित संगठन An ISO 9001:2015 Certified Organisation)</h6> -->
+                <p class="text-xl hidden md:block">National Board of Examinations in Medical Sciences</p>
+                <p class="text-lg hidden md:block">(An Autonomous Body under Ministry of Health and Family Welfare, Government of India)</p>
             </div>
             <div class="flex-none mx-2">
                 <img src="static/amrit_mahotsav.png" class="w-16 md:w-24" alt="">
             </div>
         </div>
-        <!--------------------------------------------------------------------------------------------->
 
-        <!-- Content here -->
         <div id="content" class="flex flex-col grow p-4" style="background-color: #E3F3FA;">
             <div class="mb-4">
-                <input type="text" id="fileSearch" placeholder="Search files by name..." class="w-full p-2 rounded-lg border border-gray-300" onkeyup="filterFiles()">
+                <input type="text" id="fileSearch" placeholder="Search files by name..." class="w-full p-2 rounded-lg border border-gray-300" onkeyup="fetchFiles()">
             </div>
             <table class="min-w-full bg-white rounded-lg">
                 <thead>
@@ -52,18 +39,7 @@
                         <th class="py-2 px-4 border-b">Size</th>
                     </tr>
                 </thead>
-                <tbody id="fileTable">
-                    <tr>
-                        <td class="py-2 px-4 border-b">example_file_1.pdf</td>
-                        <td class="py-2 px-4 border-b">2025-02-24</td>
-                        <td class="py-2 px-4 border-b">1.2 MB</td>
-                    </tr>
-                    <tr>
-                        <td class="py-2 px-4 border-b">example_file_2.docx</td>
-                        <td class="py-2 px-4 border-b">2025-02-23</td>
-                        <td class="py-2 px-4 border-b">800 KB</td>
-                    </tr>
-                </tbody>
+                <tbody id="fileTable"></tbody>
             </table>
         </div>
 
@@ -75,17 +51,24 @@
     <script>
         document.getElementById("year").innerText = new Date().getFullYear();
 
-        function filterFiles() {
-            const searchValue = document.getElementById("fileSearch").value.toLowerCase();
-            const rows = document.querySelectorAll("#fileTable tr");
+        async function fetchFiles() {
+            const searchValue = document.getElementById("fileSearch").value;
+            const response = await fetch('http://127.0.0.1:5000/files?search=' + encodeURIComponent(searchValue));
+            const files = await response.json();
+            const fileTable = document.getElementById("fileTable");
 
-            rows.forEach(row => {
-                const fileName = row.cells[0].innerText.toLowerCase();
-                row.style.display = fileName.includes(searchValue) ? "" : "none";
-            });
+            fileTable.innerHTML = files.map(file => `
+                <tr>
+                    <td class="py-2 px-4 border-b">${file.name}</td>
+                    <td class="py-2 px-4 border-b">${file.modified}</td>
+                    <td class="py-2 px-4 border-b">${file.size}</td>
+                </tr>
+            `).join('');
         }
-    </script>
 
+        // Fetch files on initial load
+        fetchFiles();
+    </script>
 
         <!------------------------------------ Footer ------------------------------------------------->
         <div class="flex justify-center items-center px-2 py-2 text-white" style="background-color: #31577c;">
