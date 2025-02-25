@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import *
 import os
 from datetime import datetime
 from flask_cors import CORS
@@ -7,6 +7,10 @@ app = Flask(__name__)
 CORS(app)
 # Directory where files are stored
 FILES_DIRECTORY = "./files"
+
+@app.route('/', methods=['GET'])
+def index():
+    return render_template('index.html')
 
 # Helper function to get file info
 def get_files(search_query=None):
@@ -36,4 +40,4 @@ def list_files():
     return jsonify(files)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)
