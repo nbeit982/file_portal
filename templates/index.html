@@ -53,7 +53,7 @@
 
         async function fetchFiles() {
             const searchValue = document.getElementById("fileSearch").value;
-            const response = await fetch('http://127.0.0.1:5000/files?search=' + encodeURIComponent(searchValue));
+            const response = await fetch('/files?search=' + encodeURIComponent(searchValue));
             const files = await response.json();
             const fileTable = document.getElementById("fileTable");
 
