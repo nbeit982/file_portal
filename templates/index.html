@@ -53,13 +53,13 @@
 
         async function fetchFiles() {
             const searchValue = document.getElementById("fileSearch").value;
-            const response = await fetch('http://127.0.0.1:5000/files?search=' + encodeURIComponent(searchValue));
+            const response = await fetch('/files?search=' + encodeURIComponent(searchValue));
             const files = await response.json();
             const fileTable = document.getElementById("fileTable");
 
             fileTable.innerHTML = files.map(file => `
                 <tr onclick="openFile('${file.name}')" style="cursor: pointer;">
-                    <td class="py-2 px-4 border-b">${file.name}</td>
+                    <td class="py-2 px-4 border-b font-medium text-blue-600 hover:underline">${file.name}</td>
                     <td class="py-2 px-4 border-b">${file.modified}</td>
                     <td class="py-2 px-4 border-b">${file.size}</td>
                 </tr>
@@ -69,10 +69,12 @@
         function openFile(fileName) {
             const fileUrl = `/files/${encodeURIComponent(fileName)}`;
             Swal.fire({
-                title: fileName,
-                html: `<iframe src="${fileUrl}" width="100%" height="400px" style="border:none;"></iframe>`,
-                width: 800,
-                showCloseButton: true
+                html: `<embed src="${fileUrl}" style="width:100%;height:80vh; type="application/pdf"></embed>`,
+                showCloseButton: true,
+                heightAuto: false,
+                width: '80%',
+                confirmButtonText: 'Close',
+                confirmButtonColor: '#31577c'
             });
         }
 
