@@ -10,13 +10,13 @@ Now give executable permissions to `nbems_it_file_portal`
 
 ```
 sudo chmod +x nbems_it_file_portal
-
+```
 
 ## Starting the Service
 
 ```
 sudo systemctl daemon-reload
-sudo systemctl enable olb.service
-sudo systemctl start olb
-sudo systemctl status olb
+sudo systemctl enable nbems_it_file_portal.service
+sudo systemctl start nbems_it_file_portal
+sudo systemctl status nbems_it_file_portal
 ```
