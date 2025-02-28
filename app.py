@@ -3,14 +3,19 @@ import os
 from datetime import datetime
 from flask_cors import CORS
 from flask import send_from_directory
+from pprint import pprint
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 CORS(app)
+
+# Create a Blueprint
+fdp = Blueprint('fdp', __name__, url_prefix='/fdp', static_folder='static')
+
 # Directory where files are stored
 FILES_DIRECTORY = "./files"
 
 
-@app.route('/', methods=['GET'])
+@fdp.route('/', methods=['GET'])
 def index():
     return render_template('index.html')
 
@@ -23,6 +28,10 @@ def get_files(search_query=None):
         return files
 
     for file_name in os.listdir(FILES_DIRECTORY):
+        
+        if file_name == ".empty":
+            continue
+
         if search_query and search_query.lower() not in file_name.lower():
             continue
 
@@ -34,24 +43,23 @@ def get_files(search_query=None):
                 "modified": datetime.fromtimestamp(os.path.getmtime(file_path)).strftime('%Y-%m-%d %H:%M:%S')
             }
             files.append(file_info)
-
+    pprint(files)
     return files
 
 
-@app.route('/files', methods=['GET'])
+@fdp.route('/files', methods=['GET'])
 def list_files():
     search_query = request.args.get('search')
     files = get_files(search_query)
     return jsonify(files)
 
 
-@app.route('/files/<path:filename>', methods=['GET'])
+@fdp.route('/files/<path:filename>', methods=['GET'])
 def get_file(filename):
     return send_from_directory(FILES_DIRECTORY, filename)
-# New route to serve the file
 
 
-@app.route('/file/<filename>', methods=['GET'])
+@fdp.route('/file/<filename>', methods=['GET'])
 def serve_file(filename):
     file_path = os.path.join(FILES_DIRECTORY, filename)
     if os.path.exists(file_path) and os.path.isfile(file_path):
@@ -59,6 +67,9 @@ def serve_file(filename):
     else:
         return jsonify({"error": "File not found"}), 404
 
+
+# Register the Blueprint with the Flask app
+app.register_blueprint(fdp)
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)
