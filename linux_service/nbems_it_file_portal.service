@@ -1,0 +1,20 @@
+[Unit]
+Description="NBEMS_IT_File_Portal"
+[Service]
+User=root
+# The configuration file application.properties should be here:
+
+#change this to your workspace
+WorkingDirectory=/root/file_portal
+
+#path to executable. 
+#executable is a shell script
+ExecStart= /usr/bin/sudo /root/file_portal/linux_service/nbems_it_file_portal
+
+SuccessExitStatus=143
+TimeoutStopSec=10
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
