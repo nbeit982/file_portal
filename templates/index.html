@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en" class="h-full">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,37 +10,14 @@
     <script src="https://unpkg.com/sweetalert2@11"></script>
     <style>
         /* Custom styles for table enhancements */
-        #fileTable tr {
-            transition: background-color 0.2s ease;
-        }
-        
-        #fileTable tr:nth-child(even) {
-            background-color: #f9fafb;
-        }
-        
-        #fileTable tr:hover {
-            background-color: #dbeafe;
-        }
-        
-        #fileTable td {
-            transition: color 0.2s ease;
-        }
-        
-        .table-container {
-            overflow-x: auto;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border-radius: 0.5rem;
-        }
-        
-        .loading {
-            text-align: center;
-            padding: 1rem;
-            color: #31577c;
-            font-style: italic;
-        }
+        #fileTable tr { transition: background-color 0.2s ease; }
+        #fileTable tr:nth-child(even) { background-color: #f9fafb; }
+        #fileTable tr:hover { background-color: #dbeafe; }
+        #fileTable td { transition: color 0.2s ease; }
+        .table-container { overflow-x: auto; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); border-radius: 0.5rem; }
+        .loading { text-align: center; padding: 1rem; color: #31577c; font-style: italic; }
     </style>
 </head>
-
 <body class="h-full">
     <div class="flex flex-col h-full">
         <div class="flex items-center px-1 py-2 text-white" style="background-color: #31577c;">
@@ -86,14 +62,11 @@
         async function fetchFiles() {
             const searchValue = document.getElementById("fileSearch").value;
             const fileTable = document.getElementById("fileTable");
-            
-            // Show loading state
             fileTable.innerHTML = '<tr><td colspan="3" class="loading">Loading files...</td></tr>';
 
             try {
                 const response = await fetch('/fdp/files?search=' + encodeURIComponent(searchValue));
                 const files = await response.json();
-                
                 fileTable.innerHTML = files.length > 0 
                     ? files.map(file => `
                         <tr onclick="openFile('${file.name}')" style="cursor: pointer;" class="animate-fade-in">
@@ -112,31 +85,65 @@
         function openFile(fileName) {
             const fileUrl = `/fdp/files/${encodeURIComponent(fileName)}`;
             Swal.fire({
-                html: `<embed src="${fileUrl}" style="width:100%;height:80vh; type="application/pdf"></embed>`,
+                html: `
+                    <div style="width: 100%; height: 80vh; display: flex; flex-direction: column;">
+                        <embed src="${fileUrl}" style="width: 100%; height: 100%;" type="application/pdf"></embed>
+                        <button id="addPdfBtn" class="mt-2 px-4 py-2 bg-green-500 text-white rounded-lg">Add PDF</button>
+                    </div>
+                `,
                 showCloseButton: true,
                 heightAuto: false,
                 width: '80%',
                 confirmButtonText: 'Close',
-                confirmButtonColor: '#31577c'
+                confirmButtonColor: '#31577c',
+                didOpen: () => {
+                    document.getElementById('addPdfBtn').addEventListener('click', () => {
+                        Swal.close(); // Close the viewer to open the upload dialog
+                        addPdfContent(fileName);
+                    });
+                }
             });
         }
 
-        // Simple fade-in animation for rows
+        function addPdfContent(fileName) {
+            Swal.fire({
+                title: `Add PDF to ${fileName}`,
+                html: '<input type="file" id="pdfFile" accept="application/pdf" />',
+                showCancelButton: true,
+                confirmButtonText: 'Upload',
+                preConfirm: async () => {
+                    const fileInput = document.getElementById('pdfFile');
+                    const file = fileInput.files[0];
+                    if (!file) return Swal.showValidationMessage('Please select a PDF file');
+
+                    const formData = new FormData();
+                    formData.append('file', file);
+
+                    const response = await fetch(`/fdp/files/${encodeURIComponent(fileName)}/append`, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        Swal.showValidationMessage('Failed to add PDF content');
+                    }
+                }
+            }).then(result => {
+                if (result.isConfirmed) {
+                    Swal.fire('Success!', 'PDF content added successfully.', 'success');
+                    fetchFiles(); // Refresh the file list
+                }
+            });
+        }
+
         const styleSheet = document.createElement('style');
         styleSheet.textContent = `
-            .animate-fade-in {
-                animation: fadeIn 0.3s ease-in;
-            }
-            @keyframes fadeIn {
-                from { opacity: 0; }
-                to { opacity: 1; }
-            }
+            .animate-fade-in { animation: fadeIn 0.3s ease-in; }
+            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         `;
         document.head.appendChild(styleSheet);
 
-        // Fetch files on initial load
         fetchFiles();
     </script>
 </body>
-
 </html>
